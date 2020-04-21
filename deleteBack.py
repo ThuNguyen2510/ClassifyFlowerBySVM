@@ -1,14 +1,45 @@
-import numpy as np
-import cv2 as cv
-import os 
-from matplotlib import pyplot as plt
-img = cv.imread('a.jpg')
-mask = np.zeros(img.shape[:2],np.uint8)
-bgdModel = np.zeros((1,65),np.float64)
-fgdModel = np.zeros((1,65),np.float64)
-rect = (50,50,450,290)
-cv.grabCut(img,mask,rect,bgdModel,fgdModel,5,cv.GC_INIT_WITH_RECT)
-mask2 = np.where((mask==2)|(mask==0),0,1).astype('uint8')
-img = img*mask2[:,:,np.newaxis]
-cv.imwrite('a_del.png', img) 
-plt.imshow(img),plt.colorbar(),plt.show()
+import numpy as np 
+import cv2 
+import glob
+import os
+from PIL import Image  
+path1 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Windflower"
+path2 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Windflower2"
+
+filenames = glob.glob(path1+"/*.jpg")
+images = [cv2.imread(img) for img in filenames]
+i=0
+# for imgo in images:
+while(i<len(images)):
+	
+	imgo=images[i]
+	height, width = imgo.shape[:2] 
+	#Create a mask holder 
+	mask = np.zeros(imgo.shape[:2],np.uint8) 
+
+	#Grab Cut the object 
+	bgdModel = np.zeros((1,65),np.float64) 
+	fgdModel = np.zeros((1,65),np.float64) 
+	print(i)
+		#Hard Coding the Rect The object must lie within this rect. 
+	rect = (10,10,width-30,height-30) 
+	cv2.grabCut(imgo,mask,rect,bgdModel,fgdModel,5,cv2.GC_INIT_WITH_RECT) 
+	mask = np.where((mask==2)|(mask==0),0,1).astype('uint8') 
+	img1 = imgo*mask[:,:,np.newaxis] 
+
+		#Get the background 
+	background = imgo - img1 
+
+		#Change all pixels in the background that are not black to white 
+	background[np.where((background > [0,0,0]).all(axis = 2))] = [255,255,255] 
+
+		#Add the background and the image 
+	final = background + img1 
+
+	                # need to do some more processing here             
+	cv2.imwrite(path2+"/"+os.path.basename(filenames[i]),final)
+	i=i+1
+
+
+
+

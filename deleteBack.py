@@ -3,8 +3,10 @@ import cv2
 import glob
 import os
 from PIL import Image  
-path1 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Windflower"
-path2 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Windflower2"
+from resizeimage import resizeimage
+
+path1 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Buttercup"
+path2 = "D:/Giao Trinh/Nam4/Ki2/HTDPT/Flower_DataSet/Buttercup2"
 
 filenames = glob.glob(path1+"/*.jpg")
 images = [cv2.imread(img) for img in filenames]
@@ -31,11 +33,10 @@ while(i<len(images)):
 	background = imgo - img1 
 
 		#Change all pixels in the background that are not black to white 
-	background[np.where((background > [0,0,0]).all(axis = 2))] = [255,255,255] 
+	background[np.where((background > [0,0,0]).all(axis = 2))] = [0,0,0] 
 
 		#Add the background and the image 
 	final = background + img1 
-
 	                # need to do some more processing here             
 	cv2.imwrite(path2+"/"+os.path.basename(filenames[i]),final)
 	i=i+1
